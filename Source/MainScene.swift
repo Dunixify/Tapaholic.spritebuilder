@@ -13,6 +13,7 @@ class MainScene: CCNode {
     var delayTime:Float32;
     var delayCCTime = CCTime();
     var delay = CCActionDelay();
+    var Rings=[Ring]();
     
     override init() {
         misses = 0;
@@ -26,10 +27,6 @@ class MainScene: CCNode {
     override func update(delta: CCTime) {
         time++;
         speed = speed + 0.001;
-        var currRing = Ring(s:speed);
-//        if(misses >= 3){
-//            
-//        }
         if(time % minTimeInterval == 0){
             //random delay time between 0 and 1.5
             delayTime = Float32((Double(arc4random()) / arc4randoMax) * (upper - lower) + lower);
@@ -37,17 +34,20 @@ class MainScene: CCNode {
             //CCDelaybetween rings
             delay = CCActionDelay(duration: delayCCTime);
             self.runAction(delay);
-            self.addChild(currRing);
+            Rings.append(Ring(s: speed));
+            self.addChild(Rings.last);
         }
-        if(currRing.scaleActionEnded == true){
-            if(currRing.miss == true){
-                misses++;
-                self.removeChild(currRing);
-            }
-            else{
-            //add points earned from ring & delete ring
-            points += Int(currRing.points);
-            self.removeChild(currRing);
+        for Ring in Rings{
+            if(Ring.miss == true){
+                if(Ring.miss == true){
+                    misses++;
+                    self.removeChild(Ring);
+                }
+                else{
+                    //add points earned from ring & delete ring
+                    points += Int(Ring.points);
+                    self.removeChild(Ring);
+                }
             }
         }
     }
