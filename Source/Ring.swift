@@ -5,16 +5,32 @@
 
 import UIKit
 
+public extension Float {
+    /**
+    Returns a random floating point number between 0.0 and 1.0, inclusive.
+    By DaRkDOG
+    */
+    public static func random() -> Float {
+        return Float(arc4random()) / 0xFFFFFFFF
+    }
+    /**
+    By DaRkDOG
+    */
+    public static func random(#min: Float, max: Float) -> Float {
+        return Float.random() * (max - min) + min
+    }
+}
+
 class Ring: CCNode {
     //variable declerations
-    var firstRing = CCSprite(); //static ring
-    var secondRing = CCSprite(); //growing ring
+    var firstRing:CCSprite; //static ring
+    var secondRing:CCSprite; //growing ring
     var speed:Double; //speed for CCActions
-    var timeForFade = CCTime();//time for first ring to fade into/out of visibility
-    var timeForScale = CCTime(); //time for second ring to scale to size
-    var fadeInFirstRing = CCActionFadeIn(); //static ring fade in action
+    var timeForFade:CCTime;//time for first ring to fade into/out of visibility
+    var timeForScale:CCTime; //time for second ring to scale to size
+    var fadeInFirstRing:CCActionFadeIn; //static ring fade in action
 //    var fadeRingOut = CCActionFadeOut(); //static & growing ring fade out action
-    var scaleSecondRing = CCActionScaleTo(); //growing ring scaling action
+    var scaleSecondRing:CCActionScaleTo; //growing ring scaling action
     var points:Float; //points scores on this ring
     let maxPoints:Float; //max possible points for perfect tap
     var miss:Bool; //is this ring a miss?
@@ -27,14 +43,12 @@ class Ring: CCNode {
         speed=s;
         points = 0;
         maxPoints = 100.0;
-        maxScale = 1.2;
         miss = false;
         scaleActionEnded = false;
         timeForFade = CCTime(0.25/speed);
         timeForScale = CCTime(1.5/speed);
         fadeInFirstRing = CCActionFadeIn(duration: timeForFade);
 //        fadeRingOut = CCActionFadeOut(duration: timeForFade);
-        scaleSecondRing = CCActionScaleTo(duration: timeForScale, scale: maxScale);
         
         //choosing rings' colors
         var color:UInt32 = arc4random_uniform(3)
@@ -49,10 +63,13 @@ class Ring: CCNode {
             firstRing = CCSprite(imageNamed: "blue_ring.png");
             secondRing = CCSprite(imageNamed: "blue_ring.png");
         }
-        //rings initially not visible
+        //rings initiall values
         firstRing.opacity = 0.0;
+        firstRing.scale = Float.random(min: 0.45, max: 1.0);
+        maxScale = secondRing.scale + (0.2 * secondRing.scale);
         secondRing.opacity = 0.0;
         secondRing.scale = 0.0;
+        scaleSecondRing = CCActionScaleTo(duration: timeForScale, scale: maxScale);
         
     }
     
