@@ -54,16 +54,53 @@ class Ring: CCNode {
         var color:UInt32 = arc4random_uniform(3)
         switch(color){
         case(0):
-            firstRing = CCSprite(imageNamed: "red_ring.png");
-            secondRing = CCSprite(imageNamed: "red_ring.png");
+            firstRing = CCSprite(imageNamed: "ring_red.png");
+            var secondColor:UInt32 = arc4random_uniform(2)
+            switch(secondColor){
+            case(0):
+                secondRing = CCSprite(imageNamed: "ring_green.png");
+            case(1):
+                secondRing = CCSprite(imageNamed: "ring_blue.png");
+            default:
+                secondRing = CCSprite(imageNamed: "ring_yellow.png");
+            }
         case(1):
-            firstRing = CCSprite(imageNamed: "green_ring.png");
-            secondRing = CCSprite(imageNamed: "green_ring.png");
+            firstRing = CCSprite(imageNamed: "ring_green.png");
+            var secondColor:UInt32 = arc4random_uniform(2)
+            switch(secondColor){
+            case(0):
+                secondRing = CCSprite(imageNamed: "ring_red.png");
+            case(1):
+                secondRing = CCSprite(imageNamed: "ring_blue.png");
+            default:
+                secondRing = CCSprite(imageNamed: "ring_yellow.png");
+            }
+        case(2):
+            firstRing = CCSprite(imageNamed: "ring_yellow.png");
+            var secondColor:UInt32 = arc4random_uniform(2)
+            switch(secondColor){
+            case(0):
+                secondRing = CCSprite(imageNamed: "ring_green.png");
+            case(1):
+                secondRing = CCSprite(imageNamed: "ring_blue.png");
+            default:
+                secondRing = CCSprite(imageNamed: "ring_red.png");
+            }
         default:
-            firstRing = CCSprite(imageNamed: "blue_ring.png");
-            secondRing = CCSprite(imageNamed: "blue_ring.png");
+            firstRing = CCSprite(imageNamed: "ring_blue.png");
+            var secondColor:UInt32 = arc4random_uniform(2)
+            switch(secondColor){
+            case(0):
+                secondRing = CCSprite(imageNamed: "ring_green.png");
+            case(1):
+                secondRing = CCSprite(imageNamed: "ring_red.png");
+            default:
+                secondRing = CCSprite(imageNamed: "ring_yellow.png");
+            }
         }
         //rings initiall values
+        firstRing.zOrder = 1;
+        secondRing.zOrder = 2;
         firstRing.opacity = 0.0;
         firstRing.scale = Float.random(min: 0.45, max: 1.0);
         maxScale = secondRing.scale + (0.2 * secondRing.scale);

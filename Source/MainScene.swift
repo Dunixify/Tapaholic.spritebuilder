@@ -26,11 +26,12 @@ class MainScene: CCNode {
 
     override func update(delta: CCTime) {
         if(misses>=3){
-            //display "game over" screen (as a scene?) with points and time, show top x highschore, buttons for main menu, retry, etc
+            //display "game over" screen (as a scene) with points and time, show top x highschore, buttons for main menu, retry, etc
+            NSLog("Game Over");
         }
         else{
             time++;
-            speed = speed + 0.001;
+            speed += 0.001;
             if(time % minTimeInterval == 0){
                 //random delay time between 0 and 1.5
                 var delayTime = Float32((Double(arc4random()) / arc4randoMax) * (upper - lower) + lower);
@@ -42,16 +43,15 @@ class MainScene: CCNode {
                 self.addChild(Rings.last);
             }
             for Ring in Rings{
-                if(Ring.miss == true){
+                if(Ring.scaleActionEnded == true){
                     if(Ring.miss == true){
                         misses++;
-                        self.removeChild(Ring);
                     }
                     else{
                         //add points earned from ring & delete ring
                         points += Int(Ring.points);
-                        self.removeChild(Ring);
-                    }
+                   }
+                    self.removeChild(Ring);
                 }
             }
         }
