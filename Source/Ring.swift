@@ -118,8 +118,12 @@ class Ring: CCNode {
         //set random position
         var randX:Int = self.randInt(0, upper: Int(screenSize.width - firstRing.boundingBox().size.width + 1));
         var randY:Int = self.randInt(0, upper: Int(screenSize.height - firstRing.boundingBox().size.height + 1));
-        self.position.x = CGFloat(randX) + (firstRing.boundingBox().size.width / 2);
-        self.position.y = CGFloat(randY) + (firstRing.boundingBox().size.height / 2);
+    //    self.position.x = CGFloat(randX) + (firstRing.boundingBox().size.width / 2);
+    //    self.position.y = CGFloat(randY) + (firstRing.boundingBox().size.height / 2);
+        firstRing.position.x = 0;
+        firstRing.position.y = 0;
+        secondRing.position.x = 0;
+        secondRing.position.x = 0;
         //fade in first ring, show & scale second ring
         self.addChild(firstRing);
         self.addChild(secondRing);
@@ -132,7 +136,7 @@ class Ring: CCNode {
     
     override func touchBegan(touch: CCTouch!, withEvent event: CCTouchEvent!) {
         //retrieving touch location
-        var touchLocation:CGPoint = touch.locationInNode(self);
+        //var touchLocation:CGPoint = touch.locationInNode(self);
         //stop second ring growth
         secondRing.stopAction(scaleSecondRing);
         //points calculation based on scale of second ring relative to first ring

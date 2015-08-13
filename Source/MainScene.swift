@@ -1,6 +1,6 @@
 import Foundation
 
-class MainScene: CCNode {
+class MainScene: CCScene {
     var speed:Double; //actions' speed for rings
     var time:Int; //current time in frames
     let minTimeInterval:Int; //minimum time between rings
@@ -23,7 +23,11 @@ class MainScene: CCNode {
         speed = 1.0;
         time = 0;
     }
-
+    func spawnRing(){
+        //find random position within screen that doesn't overlap with other Rings
+        //spawn a ring in that position if Rings contains less than 4 rings
+        
+    }
     override func update(delta: CCTime) {
         if(misses>=3){
             //display "game over" screen (as a scene) with points and time, show top x highschore, buttons for main menu, retry, etc
@@ -41,6 +45,7 @@ class MainScene: CCNode {
                 self.runAction(delay);
                 Rings.append(Ring(s: speed));
                 self.addChild(Rings.last);
+                NSLog("Ring added");
             }
             for Ring in Rings{
                 if(Ring.scaleActionEnded == true){
@@ -51,6 +56,9 @@ class MainScene: CCNode {
                         //add points earned from ring & delete ring
                         points += Int(Ring.points);
                    }
+                    var fadeTime = CCTime(0.5/speed);
+                    var fadeRingOut = CCActionFadeOut(duration: fadeTime);
+                    Ring.runAction(fadeRingOut);
                     self.removeChild(Ring);
                 }
             }
