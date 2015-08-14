@@ -18,7 +18,17 @@ class MainScene: CCScene {
 //    var delay:CCActionDelay;
     var Rings=[Ring]();
     var winSize = CCDirector.sharedDirector().viewSize();
-
+    var ptsLabel = CCLabelTTF();
+    var missesLabel = CCLabelTTF();
+//    override convenience init(){
+//        self.init();
+//        userInteractionEnabled = true;
+//    }
+    
+    override init(){
+        super.init();
+        userInteractionEnabled = true;
+    }
     func spawnRingPair(){
         //find random position within screen that doesn't overlap with other Rings
         //spawn a ring in that position if Rings contains less than 4 rings
@@ -29,8 +39,6 @@ class MainScene: CCScene {
         
         var innerRing = Ring();
         var outerRing = Ring();
-        Rings.append(outerRing);
-        Rings.append(innerRing);
         outerRing.outerRing = true;
         var outerRingColor:UInt32 = arc4random_uniform(3);
         var innerRingColor:UInt32 = arc4random_uniform(2);
@@ -90,64 +98,108 @@ class MainScene: CCScene {
         
         outerRing.position = ccp(actualX, actualY);
         innerRing.position = outerRing.position;
-        
+        innerRing.scale = 0.3;
+
         addChild(outerRing);
         addChild(innerRing);
-        
+        Rings.append(outerRing);
+        Rings.append(innerRing);
         var fadeTime = CCTime(0.5/speed);
-        var fade = CCActionFadeIn(duration:fadeTime);
-        outerRing.runAction(fade);
-        innerRing.runAction(fade);
+        var fadeOuter = CCActionFadeIn(duration:fadeTime);
+        var fadeInner = CCActionFadeIn(duration:fadeTime);
         
-        var scaleTime = CCTime(1);
-        var scaleinnerRing = CCActionScaleTo(duration: scaleTime, scale: 1.2);
+        outerRing.runAction(fadeOuter);
+        innerRing.runAction(fadeInner);
         
+        var scaleTime = CCTime(3.0/speed);
+        var scaleInnerRing = CCActionScaleTo(duration: scaleTime, scale: 1.2);
+        innerRing.runAction(scaleInnerRing);
         NSLog("Ring pair added");
-
-        
     }
    
     override func touchBegan(touch: CCTouch!, withEvent event: CCTouchEvent!) {
-        for ring in Rings{
-            if(ring.touched == true){
-                if(ring.outerRing == true){
-                    ring.removeFromParent();
-                    continue;
-                }
-                    var tempPoints = maxPoints - (maxPoints*(abs(staticScale-CGFloat(ring.scale))));
+        var touchLocation = touch.locationInNode(self);
+        var touchConvertedToRing = convertToNodeSpace(touchLocation);
+        for (index,ring) in enumerate(Rings){
+            if(ring.outerRing==false){
+                if(ring.boundingBox().contains(touchConvertedToRing)){
+              //  if(ring.boundingBox().contains(touchLocation)){
+                    var tempScale = Rings[index-1].scale;
+                    var tempPoints = maxPoints - (maxPoints*(abs(CGFloat(tempScale-ring.scale))));
                     points+=tempPoints;
-                ring.removeFromParent();
+                    ring.removeFromParent();
+                    Rings[index-1].removeFromParent();
+                    Rings.removeAtIndex(index);
+                    Rings.removeAtIndex(index-1);
+                    updateLabels();
+                }
             }
         }
+//        for (index,ring) in enumerate(Rings){
+//            if(ring.touched == true){
+//                if(ring.outerRing == true){
+//                    var tempScale = Rings[index+1].scale;
+//                    var tempPoints = maxPoints - (maxPoints*(abs(CGFloat(ring.scale-tempScale))));
+//                    points+=tempPoints;
+//                    Rings[index+1].removeFromParent();
+//                    ring.removeFromParent();
+//                    Rings.removeAtIndex(index+1);
+//                    Rings.removeAtIndex(index);
+                    //updateLabels();
+//                    
+//                }
+//                else{
+//                    var tempScale = Rings[index-1].scale;
+//                    var tempPoints = maxPoints - (maxPoints*(abs(CGFloat(tempScale-ring.scale))));
+//                    points+=tempPoints;
+//                    ring.removeFromParent();
+//                    Rings[index-1].removeFromParent();
+//                    Rings.removeAtIndex(index);
+//                    Rings.removeAtIndex(index-1);
+                    //updateLabels();
+//                }
+//            }
+//        }
+    }
+    func updateLabels(){
+        ptsLabel.string = "\(points)";
+        missesLabel.string = "\(misses)";
     }
     override func update(delta: CCTime) {
+        userInteractionEnabled = true;
         var fadeTime = CCTime(0.5/speed);
-        var fadeRingOut = CCActionFadeOut(duration: fadeTime);
+        var fadeOuterRing = CCActionFadeOut(duration: fadeTime);
+        var fadeInnerRing = CCActionFadeOut(duration: fadeTime);
+      
         if(misses>=3){
             //display "game over" screen (as a scene) with points and time, show top x highschore, buttons for main menu, retry, etc
             NSLog("Game Over");
-            for Ring in Rings{
-                Ring.runAction(fadeRingOut);
-            }
-            var delay = CCActionDelay(duration: fadeTime);
-            removeAllChildren();
+//            for Ring in Rings{
+//                Ring.runAction(fadeRingOut);
+//            }
+//            var delay = CCActionDelay(duration: fadeTime);
+//            removeAllChildren();
         }
         else{
             time++;
             speed += 0.001;
             if(time % minTimeInterval == 0){
                 //random delay time between 0 and 1.5
-                if(Rings.count<4){
+                if(Rings.count<8){
                     spawnRingPair();
                 }
             }
-            for Ring in Rings{
+            for (index,Ring) in enumerate(Rings){
                 if(CGFloat(Ring.scale) == maxScale){
-                    
-                    Ring.runAction(fadeRingOut);
+                    Rings[index-1].runAction(fadeOuterRing);
+                    Ring.runAction(fadeInnerRing);
                     var delay = CCActionDelay(duration: fadeTime);
                     misses++;
+                    Rings[index-1].removeFromParent();
                     Ring.removeFromParent();
+                    Rings.removeAtIndex(index);
+                    Rings.removeAtIndex(index-1);
+                    updateLabels();
                 }
             }
         }
